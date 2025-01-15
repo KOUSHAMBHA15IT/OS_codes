@@ -10,8 +10,16 @@ int main() {
         wt[i] = wt[i - 1] + bt[i - 1] - (at[i] - at[i - 1]);
         if (wt[i] < 0) wt[i] = 0;  // Ensure no negative waiting time
     }
-    for (i = 0; i < n; i++)
+
+    for(i = 0; i < n; i++) {
+        tat[i] = bt[i] + wt[i];
+        ct[i] = tat[i] + at[i];
         avg_wt += wt[i];
+        avg_tat += tat[i];
+    }
+    
+    // Printing averages
+    printf("Average Turnaround Time: %.2f\n", avg_tat / n);
     printf("Average Waiting Time: %.2f\n", avg_wt / n);
     return 0;
 }
