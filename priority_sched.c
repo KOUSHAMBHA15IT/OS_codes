@@ -1,55 +1,48 @@
 #include <stdio.h>
-int main()
-{
-    int n = 5;
-    int id[] = {1, 2, 3, 4, 5};
-    int at[] = {0, 5, 12, 2, 9}; 
-    int bt[] = {11, 28, 2, 10, 16};
-    int priority[] = {2, 0, 3, 1, 4};
 
-    int bt_left[5],ct[5],tat[5],wt[5];
+int main() {
+    int n, bt[10], at[10], pr[10], wt[10] = {0}, tat[10], i, j, temp;
+    float avg_wt = 0, avg_tat = 0;
 
-    for(int i=0;i<n;i++){
-        bt_left[i] = bt[i];
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    printf("Enter Arrival Time, Burst Time, and Priority:\n");
+    for (i = 0; i < n; i++) {
+        printf("Process %d: ", i + 1);
+        scanf("%d %d %d", &at[i], &bt[i], &pr[i]);
     }
 
-    int t=0,complete=0,maxi_priority=-1,highest=-1;
-    int check = 0;
-    while(complete!=n){
-
-        for(int i=0;i<n;i++){
-            if((priority[i]>maxi_priority) && (at[i]<=t) && (bt_left[i]>0)){ 
-                maxi_priority = priority[i];
-                highest = i;
-                check = 1;
+    // Sort by Priority, then Arrival Time
+    for (i = 0; i < n - 1; i++) {
+        for (j = i + 1; j < n; j++) {
+            if (pr[j] < pr[i] || (pr[j] == pr[i] && at[j] < at[i])) {
+                // Swap Priority
+                temp = pr[i]; pr[i] = pr[j]; pr[j] = temp;
+                // Swap Arrival Time
+                temp = at[i]; at[i] = at[j]; at[j] = temp;
+                // Swap Burst Time
+                temp = bt[i]; bt[i] = bt[j]; bt[j] = temp;
             }
         }
-            if(check == 0){
-                t++;
-                continue;
-            }
-            bt_left[highest]--;
-            maxi_priority = priority[highest];
-
-            if(bt_left[highest] == 0){
-                complete++;
-                check=0;
-                ct[highest] = t+1;
-
-                tat[highest] = ct[highest] - at[highest];
-                wt[highest] = tat[highest] - bt[highest];
-            }
-        t++;
-        maxi_priority = -1;
     }
-    float avg_wt = 0;
-    int s=0;
-    for (int i = 0; i < n; i++) {
-        s+=wt[i];
-    }
-     avg_wt = (float)s/n;
-   
 
-    printf("Average waiting time: %.2f\n", avg_wt);
+    // Calculate Waiting Time
+    for (i = 1; i < n; i++) {
+        wt[i] = wt[i - 1] + bt[i - 1] - at[i] + at[i - 1];
+        if (wt[i] < 0) wt[i] = 0;
+    }
+
+    // Calculate Turnaround Time
+    for (i = 0; i < n; i++) {
+        tat[i] = bt[i] + wt[i];
+        avg_wt += wt[i];
+        avg_tat += tat[i];
+    }
+
+    // Print Averages
+    printf("\nAverage Waiting Time: %.2f", avg_wt / n);
+    printf("\nAverage Turnaround Time: %.2f\n", avg_tat / n);
+
     return 0;
 }
